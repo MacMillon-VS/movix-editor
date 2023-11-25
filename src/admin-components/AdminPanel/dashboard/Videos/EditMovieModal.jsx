@@ -9,7 +9,6 @@ import { FormatDate } from "../../../../utils";
 const EditMovieModal = ({ setShowModal, Movie }) => {
   const { updateMutation, loading, error } = useMutation();
   const [tags, setTags] = useState([]);
-  console.log("-------Movie", Movie);
 
   const [formData, setFormData] = useState({
     title: Movie?.video_name,
@@ -54,6 +53,7 @@ const EditMovieModal = ({ setShowModal, Movie }) => {
       payload
     );
 
+    window.location.reload();
     setShowModal(false);
   };
 
@@ -102,14 +102,15 @@ const EditMovieModal = ({ setShowModal, Movie }) => {
             value={formData.event}
             onChange={handleFormChanges}
           />
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 text-white">
             <p className="text-sm font-medium mb-2 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-start ">
               Tags:
             </p>
+
             <TagsInput
               onlyUnique={true}
               maxTags={10}
-              className="bg-[#2e374a]"
+              className="bg-[#2e374a] !text-white"
               addOnBlur={true}
               validate={(tag) => {
                 if (tag.length <= 1) {

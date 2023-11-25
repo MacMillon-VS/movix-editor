@@ -1,9 +1,8 @@
-import Navbar from "./components/Navbar/Navbar";
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import LandingPage from "./pages/Landing/LandingPage";
 import NotFound from "./pages/404/NotFound";
 import WatchPage from "./pages/Watch/WatchPage";
-import Footer from "./components/Footer/Footer";
+
 import MoviesPage from "./pages/movies/Movies";
 import { AuthProvider, useIsAuthenticated } from "react-auth-kit";
 import AdminPanel from "./AdminPanel";
@@ -14,6 +13,7 @@ import GlobalStyle from "./GlobalStyle.ts";
 import SignUp from "./admin-components/Authentication/Signup.jsx";
 import Highlights from "./admin-components/AdminPanel/dashboard/Highlights/highlights.jsx";
 import Videos from "./admin-components/AdminPanel/dashboard/Videos/Videos.jsx";
+import Layout from "./pages/Layout.tsx";
 
 function PrivateRoute({ element, ...rest }: any) {
   const isAuthenticated = useIsAuthenticated();
@@ -30,7 +30,6 @@ function PrivateRoute({ element, ...rest }: any) {
 }
 
 const App = () => {
-  const location = useLocation();
   return (
     <>
       <AuthProvider
@@ -39,14 +38,15 @@ const App = () => {
         cookieDomain={window.location.hostname}
         cookieSecure={window.location.protocol === "https:"}
       >
-        {location.pathname.includes("/admin") ? "" : <Navbar />}
-
         <Routes>
-          <Route element={<LandingPage />} path="/" />
-          <Route element={<WatchPage />} path="/watch/:id" />
-          <Route element={<MoviesPage />} path="/movies" />
-          <Route element={<NotFound />} path="*" />
+          {/* Home Page Paths */}
+          <Route path="" element={<Layout />}>
+            <Route element={<LandingPage />} path="" />
+            <Route element={<WatchPage />} path="watch/:id" />
+            <Route element={<MoviesPage />} path="movies" />
+          </Route>
 
+          {/* Admin Page Paths */}
           <Route
             path="/admin"
             element={
@@ -78,8 +78,8 @@ const App = () => {
           />
 
           <Route path="/admin/auth/sign-in" element={<Login />}></Route>
+          <Route element={<NotFound />} path="*" />
         </Routes>
-        {location.pathname.includes("/admin") ? "" : <Footer />}
       </AuthProvider>
     </>
   );
