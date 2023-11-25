@@ -6,7 +6,7 @@ import { AUTH_KEY } from "../../config";
 import { VideoResponseType, VideosType } from "../../types/videos";
 import MoviesGrid from "../../components/MoviesDisplay/MoviesGrid";
 import { useEffect, useState } from "react";
-import { downloadFile, jsonToWebVTT } from "../../utils/utils";
+import { jsonToWebVTT } from "../../utils/utils";
 import Filesaver from "file-saver";
 
 import SubtitleSearch from "./SubtitleSearch";
@@ -66,7 +66,9 @@ const WatchPage = () => {
         queryKey: ["subtitles"],
         queryFn: async () => {
           const { data } = await axios.get(
-            `${import.meta.env.VITE_BACKEND_URL}/api/video/sub-titles?video_id=${id}`,
+            `${
+              import.meta.env.VITE_BACKEND_URL
+            }/api/video/sub-titles?video_id=${id}`,
             {
               headers: {
                 Authorization: AUTH_KEY,

@@ -7,8 +7,8 @@ const MenuLink = ({ item }) => {
   return (
     <Link
       to={item.path}
-      className={` p-2 pr-[100px] hover:bg-background_hover pl-5 flex items-center gap-2 mx-1 rounded-lg  ${
-        pathname === item.path && " bg-background_hover"
+      className={` p-2 pr-[100px] hover:bg-indigo-700 pl-5 flex items-center gap-2 mx-1 rounded-lg  ${
+        pathname.includes(item.path) && "bg-background_hover"
       }`}
     >
       {item.icon}

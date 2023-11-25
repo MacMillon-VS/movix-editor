@@ -7,6 +7,27 @@ import {
   useSignOut,
 } from "react-auth-kit";
 
+function HandleError(error) {
+  let message;
+  if (error instanceof Error) {
+    message = error.message;
+    if (error.name === "AxiosError") {
+      if (error.response.status === 401) {
+        console.log("ERROR:", error.response.status);
+        Signout();
+      }
+    }
+  } else if (error && typeof error === "object" && "message" in error) {
+    message = String(error.message);
+  } else if (typeof error === "string") {
+    message = error;
+  } else {
+    message = "Unknown Error";
+  }
+
+  return message;
+}
+
 export function useAxios(url) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -93,6 +114,7 @@ export function useMutation() {
       throw err; // Rethrow the error for the caller to handle if needed
     }
   };
+
   const updateMutation = async (url, payload, config = {}) => {
     setLoading(true);
     setError(null);
@@ -101,21 +123,16 @@ export function useMutation() {
       const response = await axios.put(url, payload, {
         headers: {
           Authorization: token(),
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
       setLoading(false);
       return response.data;
     } catch (err) {
-      setError(err);
-      if (error.name === "AxiosError") {
-        if (error.response.status === 401) {
-          console.log("ERROR:", error.response.status);
-          Signout();
-        }
-      }
+      const Error = HandleError(err);
+      setError(Error);
       setLoading(false);
-      throw err; // Rethrow the error for the caller to handle if needed
+      throw Error;
     }
   };
 

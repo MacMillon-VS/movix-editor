@@ -5,7 +5,7 @@ import VideoCardSkeleton from "../Skeleton/VideoCardSkeleton";
 type Props = {
   id: number;
   image: string;
-  Movie: VideosType;
+  Movie?: VideosType;
 };
 
 const PopularMoviesCard = ({ image, Movie }: Props) => {

@@ -7,10 +7,10 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useState } from "react";
-import Modal from "./Modal";
+import Modal from "../../Modal";
 import AddMovieModal from "./AddMovieModal";
 import { BiSolidDownArrow, BiSolidUpArrow } from "react-icons/bi";
-import Loader from '../../utils/Loader'
+import Loader from "../../../../utils/Loader";
 
 export default function MovieTanTable({ data, columns }) {
   const [sorting, setSorting] = useState([]);
@@ -32,7 +32,7 @@ export default function MovieTanTable({ data, columns }) {
     onGlobalFilterChange: setFiltering,
   });
   if (!data) {
-    return <Loader/>;
+    return <Loader />;
   }
   return (
     <div className="w3-container box-border">

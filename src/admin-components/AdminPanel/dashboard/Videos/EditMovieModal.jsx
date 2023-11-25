@@ -1,21 +1,25 @@
 import React, { useState } from "react";
-import { Input } from "../ui/Input";
+import { Input } from "../../../ui/Input";
 import TagsInput from "react-tagsinput";
 import "react-tagsinput/react-tagsinput.css";
 import ReactTextareaAutosize from "react-textarea-autosize";
-import { useMutation } from "./useAxios";
-import { FormatDate } from "../../utils";
+import { useMutation } from "../../useAxios";
+import { FormatDate } from "../../../../utils";
 
-const AddMovieModal = ({ setShowModal }) => {
-  const { executeMutation, loading, error } = useMutation();
+const EditMovieModal = ({ setShowModal, Movie }) => {
+  const { updateMutation, loading, error } = useMutation();
   const [tags, setTags] = useState([]);
+  console.log("-------Movie", Movie);
+
   const [formData, setFormData] = useState({
-    title: "",
-    minister: "",
-    video_link: "",
-    event: "",
-    description: "",
+    title: Movie?.video_name,
+    minister: Movie?.video_members,
+    video_link: Movie?.video_link,
+    event: Movie?.video_event,
+    description: Movie.video_description,
+    image: Movie.thumbnail,
   });
+  // TODO: Add Images
 
   const handleChange = (tags) => {
     setTags(tags);
@@ -30,37 +34,32 @@ const AddMovieModal = ({ setShowModal }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const todaysDate = new Date();
-    const video_year = todaysDate.getFullYear();
-    const video_date = FormatDate(todaysDate);
-    const video_session = 1;
-    const video_sequence_number = 234234;
     const { video_link, description, event, minister, title } = formData;
-    const payload = [
-      {
-        video_url: video_link,
-        video_description: description,
-        video_event: event,
-        video_minister: minister,
-        video_name: title,
-        video_tags: tags,
-        video_year,
-        video_date,
-        video_session,
-        video_sequence_number,
-      },
-    ];
+    const payload = {
+      video_url: video_link,
+      video_description: description,
+      video_event: event,
+      video_minister: minister,
+      video_name: title,
+      video_tags: tags,
+    };
 
-    const data = await executeMutation(
-      `${import.meta.env.VITE_BACKEND_URL}/api/video/video`,
+    if (!Movie.video_number) {
+      return;
+    }
+    const data = await updateMutation(
+      `${import.meta.env.VITE_BACKEND_URL}/api/video/video/${
+        Movie.video_number
+      }`,
       payload
     );
+
     setShowModal(false);
   };
 
   return (
     <div className=" text-white bg-background p-5 rounded-md border border-solid shadow border-gray-400 ">
-      <h1 className=" text-xl font-bold mb-4">Add A Movie</h1>
+      <h1 className=" text-xl font-bold mb-4">Edit Movie</h1>
       <div>
         <form className=" flex flex-col gap-3 " onSubmit={handleSubmit}>
           <div className=" flex gap-2">
@@ -70,7 +69,6 @@ const AddMovieModal = ({ setShowModal }) => {
               placeholder="Enter movie title"
               label="Title"
               id={"title"}
-              required={true}
               value={formData.title}
               onChange={handleFormChanges}
               //   subtitle={""}
@@ -81,7 +79,6 @@ const AddMovieModal = ({ setShowModal }) => {
               className={"bg-[#2e374a]"}
               placeholder="Enter movie Minister"
               label="Minister"
-              required={true}
               id={"minister"}
               value={formData.minister}
               onChange={handleFormChanges}
@@ -93,7 +90,6 @@ const AddMovieModal = ({ setShowModal }) => {
             placeholder="Enter Video Link"
             label="Video Link"
             id={"video_link"}
-            required={true}
             value={formData.video_link}
             onChange={handleFormChanges}
           />
@@ -102,7 +98,6 @@ const AddMovieModal = ({ setShowModal }) => {
             className={"bg-[#2e374a]"}
             placeholder="Enter Event"
             label="Event"
-            required={true}
             id={"event"}
             value={formData.event}
             onChange={handleFormChanges}
@@ -132,7 +127,6 @@ const AddMovieModal = ({ setShowModal }) => {
               Description
             </p>
             <ReactTextareaAutosize
-              required={true}
               value={formData.description}
               onChange={handleFormChanges}
               //   maxLength={225}
@@ -142,6 +136,12 @@ const AddMovieModal = ({ setShowModal }) => {
               placeholder="Enter The Description"
               className="flex h-9 w-full rounded-md  bg-[#2e374a] px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
             />
+
+            {error ? (
+              <p className=" text-red-400">
+                Something Went Wrong Please Try Again
+              </p>
+            ) : null}
           </div>
 
           <div className=" flex w-full justify-end gap-2">
@@ -154,9 +154,10 @@ const AddMovieModal = ({ setShowModal }) => {
             </button>
             <button
               type="submit"
+              disabled={loading}
               className=" bg-[#4f46e5] px-4 py-2 rounded-md shadow text-white font-semibold hover:bg-[#4f46e5]/90"
             >
-              Add Movie
+              {loading ? "Updating..." : "Save"}
             </button>
           </div>
         </form>
@@ -165,4 +166,4 @@ const AddMovieModal = ({ setShowModal }) => {
   );
 };
 
-export default AddMovieModal;
+export default EditMovieModal;

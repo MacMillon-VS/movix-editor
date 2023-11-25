@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { AiFillCode } from "react-icons/ai";
 import { BiCommand } from "react-icons/bi";
-import { Movies } from "./MoviesData";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { AUTH_KEY } from "../../config";
@@ -27,13 +26,12 @@ const Categories = [
     id: 0,
     name: "tag:",
   },
-  
 ];
 
 const Input = () => {
   const [isopen, setOpen] = useState(false);
   const [value, setvalue] = useState("");
-  const [debouncevalue, setdebouncevalue] = useDebounce(value, 200);
+  const [debouncevalue] = useDebounce(value, 200);
   const onFocus = () => setOpen(true);
   const onBlur = () => setOpen(false);
   const inputref = useRef<HTMLInputElement>(null);
@@ -56,9 +54,11 @@ const Input = () => {
   } = useQuery({
     queryKey: ["search_movies"],
     queryFn: async () => {
-      if(!debouncevalue) return;
+      if (!debouncevalue) return;
       const { data } = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/video/video?search=${debouncevalue}`,
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/video/video?search=${debouncevalue}`,
         {
           headers: {
             Authorization: AUTH_KEY,
@@ -68,7 +68,7 @@ const Input = () => {
 
       return data as VideoResponseType;
     },
-    onError: (err) => {
+    onError: (err: unknown) => {
       // alert("Something Went Wrong");
       console.log(err);
     },
@@ -90,7 +90,7 @@ const Input = () => {
     {
       name: "Movies",
       function: "redirect",
-      items: FilteredArray?.results.map((item) => {
+      items: FilteredArray?.results.map((item: any) => {
         return {
           id: item.video_number,
           name: item.video_name,
@@ -124,6 +124,7 @@ const Input = () => {
         setvalue={setvalue}
         inputref={inputref}
         Data={Data}
+        loading={isLoading}
         setopen={setOpen}
       />
     </div>
@@ -146,16 +147,18 @@ type SuggetionProps = {
   setvalue: React.Dispatch<React.SetStateAction<string>>;
   inputref: React.RefObject<HTMLInputElement>;
   Data: TData[];
+  loading: boolean;
 };
 
 const SuggestionBox = ({
   isopen,
+  loading,
   setvalue,
   setopen,
   inputref,
   Data,
 }: SuggetionProps) => {
-  const navigate= useNavigate();
+  const navigate = useNavigate();
   const handleclick = (name: TItem, item: TData) => {
     if (item.function === "append") {
       setvalue((prev) => `${prev} ${name.name}`);
@@ -163,9 +166,8 @@ const SuggestionBox = ({
         inputref.current?.focus();
       }, 0);
     } else if (item.function === "redirect") {
-      // redirect('/watch/1312')
-      navigate(`/watch/${name.id}`)
-      // window.location.href = `http://localhost:5173/watch/${name.id}`;
+      navigate(`/watch/${name.id}`);
+
       setopen(false);
     }
   };
@@ -179,9 +181,9 @@ const SuggestionBox = ({
               <p className=" text-gray-400 mb-1">{item.name}</p>
               {item.items?.length! <= 0 ? (
                 <p className=" text-center">No Movies Found...</p>
-              ) : (
-                ""
-              )}
+              ) : null}
+
+              {loading ? <p className=" text-center">Loading....</p> : ""}
 
               {item?.items?.map((data) => (
                 <div

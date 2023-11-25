@@ -1,3 +1,6 @@
+//
+//In this code, we have a `Sidebar` component that displays a list of menu items. The menu items are defined in the `menuItems` array. Each item in the array has a `title` and a `list` of sub-items. The sub-items have a `title`, `path`, and an `icon`.
+
 import {
   MdDashboard,
   MdSupervisedUserCircle,
@@ -23,7 +26,7 @@ const menuItems = [
     list: [
       {
         title: "Videos",
-        path: "/",
+        path: "/admin/",
         icon: <MdVideocam />,
       },
       {
@@ -31,10 +34,14 @@ const menuItems = [
         path: "/dashboard/profiles",
         icon: <CgProfile />,
       },
-
       {
-        title: "Users",
-        path: "/dashboard/user",
+        title: "Highlights",
+        path: "/admin/dashboard/highlights",
+        icon: <FiUsers />,
+      },
+      {
+        title: "Add Users",
+        path: "/admin/auth/sign-up",
         icon: <FiUsers />,
       },
     ],
@@ -62,7 +69,11 @@ const Sidebar = () => {
   const SignOut = useSignOut();
 
   return (
-    <div className={"sticky top-[40px] bg-background text-slate-300 pl-5 py-3 pr-2"}>
+    <div
+      className={
+        "sticky top-[40px] bg-background text-slate-300 pl-5 py-3 pr-2"
+      }
+    >
       <div className={"flex items-center gap-2 mb-5  "}>
         <img
           className={"rounded-full aspect-square w-[50px] object-cover"}
@@ -81,12 +92,12 @@ const Sidebar = () => {
         </div>
       </div>
       <ul className={"appearance-none list-none"}>
-        {menuItems.map((cat) => (
-          <li key={cat.title} className=" my-3">
+        {menuItems.map((item) => (
+          <li key={item.title} className=" my-3">
             <span className={" text-white font-bold text-sm mx-2 "}>
-              {cat.title}
+              {item.title}
             </span>
-            {cat.list.map((item) => (
+            {item.list.map((item) => (
               <MenuLink key={item.title} item={item} />
             ))}
           </li>

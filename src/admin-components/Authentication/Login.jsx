@@ -39,6 +39,7 @@ const Login = () => {
 
       if (res.status === 200) {
         console.log(res.data, "res.data");
+
         const issignin = signin({
           token: res.data.access_token,
           expiresIn: 3600,
@@ -47,23 +48,24 @@ const Login = () => {
             email: res.data.email,
             token: res.data.access_token,
             name: res.data.name,
+            id: res.data.user_id,
           },
         });
         navigate("/admin");
       }
     } catch (error) {
-      if(error?.response?.status === 412){
-        setError("Username or Password Incorrect")
-      }else{
-        setError("Something went wrong! Please Try Again Later.")
+      if (error?.response?.status === 412) {
+        setError("Username or Password Incorrect");
+      } else {
+        setError("Something went wrong! Please Try Again Later.");
       }
-      
+
       console.log(error);
     } finally {
       setisLoading(false);
     }
   };
-  const Icon = isVisible?FaEyeSlash:FaEye
+  const Icon = isVisible ? FaEyeSlash : FaEye;
 
   return (
     <div className=" w-full h-screen bg-background text-white flex flex-col justify-center items-center">
@@ -75,16 +77,23 @@ const Login = () => {
           onChange={(e) => setUserEmail(e.target.value)}
           className=" w-[300px] px-3 py-3 text-[16px] bg-[#2e374a] rounded-md "
         ></input>
-        <div role="input" className=" w-[300px]  py-3 px-3 text-[16px] bg-[#2e374a] rounded-md flex  focus-within:border focus-within:outline-black" tabIndex={0}>
-
-        <input
-          value={userpassword}
-          type={isVisible ? "text" : "password"}
-          onChange={(e) => setUserPassword(e.target.value)}
-          className="flex-1 bg-transparent h-full border-none appearance-none outline-none"
-        />
-        {userpassword.length>0&&<Icon className="h-full mr-3 cursor-pointer hover:text-white" onClick={()=>setIsVisible(prev=>!prev)}/>
-}
+        <div
+          role="input"
+          className=" w-[300px]  py-3 px-3 text-[16px] bg-[#2e374a] rounded-md flex  focus-within:border focus-within:outline-black"
+          tabIndex={0}
+        >
+          <input
+            value={userpassword}
+            type={isVisible ? "text" : "password"}
+            onChange={(e) => setUserPassword(e.target.value)}
+            className="flex-1 bg-transparent h-full border-none appearance-none outline-none"
+          />
+          {userpassword.length > 0 && (
+            <Icon
+              className="h-full mr-3 cursor-pointer hover:text-white"
+              onClick={() => setIsVisible((prev) => !prev)}
+            />
+          )}
         </div>
         <button
           disabled={isLoading}
@@ -94,7 +103,7 @@ const Login = () => {
           {isLoading ? "Submitting" : "Submit"}
         </button>
       </form>
-      {error?(<p className="mt-5 text-red-400">{error}</p>):""}
+      {error ? <p className="mt-5 text-red-400">{error}</p> : ""}
     </div>
   );
 };

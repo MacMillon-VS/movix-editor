@@ -37,6 +37,8 @@ export default function Editor() {
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [isToolsDrawerOpen, setisToolsDrawerOpen] = useState(true);
   const [currentLanguage, setCurrentLanguage] = useState("en");
+  const [prevLanguage, setPreviousLanguage] = useState("mal");
+
   const [CurrentMovie, setCurrentMovie] = useState({});
   const debouncedsubtitle = useDebounce(subtitle, 2000);
 
@@ -241,41 +243,39 @@ export default function Editor() {
     setCurrentIndex(currentIndex);
   }, [currentTime, subtitle]);
 
+  const fetchSubtitle = () =>
+    GETSUBTITLE(CurrentMovie?.video_number, token()).then((res) => {
+      // setSubtitleOriginal(res.map((item) => new Sub(item)));
+      if (res.results.length > 0) {
+        console.log(res.results);
+        setSubtitleOriginal(
+          res.results.map((item) => {
+            const formattedres = {
+              start: item?.start_time,
+              end: item?.end_time,
+              text: item?.sub_title,
+            };
+            return newSub(formattedres);
+          })
+        );
+      } else {
+        setSubtitleOriginal([
+          newSub({
+            start: "00:00:00.721",
+            end: "00:00:05.614",
+            text: "Subtitles",
+          }),
+        ]);
+      }
+    });
   useEffect(() => {
-    const fetchSubtitle = () =>
-      GETSUBTITLE(CurrentMovie?.video_number, token()).then((res) => {
-        // setSubtitleOriginal(res.map((item) => new Sub(item)));
-        if (res.results.length > 0) {
-          console.log(res.results);
-          setSubtitleOriginal(
-            res.results.map((item) => {
-              const formattedres = {
-                start: item?.start_time,
-                end: item?.end_time,
-                text: item?.sub_title,
-              };
-              return newSub(formattedres);
-            })
-          );
-        } else {
-          setSubtitleOriginal([
-            newSub({
-              start: "00:00:00.721",
-              end: "00:00:05.614",
-              text: "Subtitles",
-            }),
-          ]);
-        }
-      });
-
     console.log(CurrentMovie, "Current");
     if (!!CurrentMovie?.video_number) {
       fetchSubtitle();
     }
   }, [setSubtitleOriginal, CurrentMovie]);
 
-  useEffect(() => {
-    // console.log(subtitle, "SUBTITLE");
+  const UpdateSubtitles = async (lang) => {
     const formattedsubtitle = subtitle.map((item, index) => ({
       srt_sequence_number: index,
       start_time: item.start,
@@ -285,22 +285,27 @@ export default function Editor() {
 
     const payload = {
       video_id: CurrentMovie.video_number,
-      language_code: "mal",
+      language_code: lang,
       srt_data: formattedsubtitle,
     };
 
-    async function updateSubtitles() {
-      const response = await UpdateSubtitle(payload, token());
-      if (response.error) {
-        alert("Subtitles are not updated");
-      } else {
-        console.log("Subtitles are updated");
+    const response = await UpdateSubtitle(payload, token());
+    console.log(payload);
+    if (response.error) {
+      if (response.error === "unauthorised") {
+        SignOut();
       }
+      alert("Subtitles are not updated");
+    } else {
+      console.log("Subtitles are updated");
     }
+  };
 
-    if (payload.video_id) {
-      console.log(payload);
-      updateSubtitles();
+  useEffect(() => {
+    // console.log(subtitle, "SUBTITLE");
+
+    if (CurrentMovie.video_number) {
+      UpdateSubtitles(currentLanguage);
     }
   }, [debouncedsubtitle]);
 
@@ -317,6 +322,7 @@ export default function Editor() {
     }
     setCurrentMovie(movie);
   };
+
   useEffect(() => {
     GETMOVIE();
   }, []);
@@ -336,6 +342,37 @@ export default function Editor() {
         capture: "true",
       });
   }, []);
+
+  useEffect(() => {}, [currentLanguage]);
+
+  const handleSubtitleChange = (lang) => {
+    setCurrentLanguage(lang);
+    setPreviousLanguage(currentLanguage);
+    let code;
+    if (lang === "mal") {
+      code = 2;
+    }
+    if (lang === "en") {
+      code = 1;
+    }
+
+    UpdateSubtitles(currentLanguage);
+    GETSUBTITLE(CurrentMovie?.video_number, token(), code).then((res) => {
+      console.log(res.results, "__________NEW DATA");
+
+      setSubtitleOriginal(
+        res.results.map((item) => {
+          const formattedres = {
+            start: item?.start_time,
+            end: item?.end_time,
+            text: item?.sub_title,
+          };
+
+          return newSub(formattedres);
+        })
+      );
+    });
+  };
 
   const props = {
     player,
@@ -375,14 +412,24 @@ export default function Editor() {
 
   return (
     <HomeStyle>
-      <div className="main">
+      <div className="main text-white">
+        <button onClick={() => handleSubtitleChange("en")}>English</button>
+        <button onClick={() => handleSubtitleChange("mal")}>Malyalam</button>
+
+        <br />
+        {currentLanguage}
+        {/* {prevLanguage} */}
         <Player {...props} />
         <Subtitles {...props} />
         <div
           className=" tools_trigger"
           onClick={() => setisToolsDrawerOpen((prev) => !prev)}
         >
-          {isToolsDrawerOpen ? <BiArrowFromLeft color="white"/> : <BiArrowFromRight color="white" />}
+          {isToolsDrawerOpen ? (
+            <BiArrowFromLeft color="white" />
+          ) : (
+            <BiArrowFromRight color="white" />
+          )}
         </div>
         {isToolsDrawerOpen && <Tool {...props} />}
       </div>

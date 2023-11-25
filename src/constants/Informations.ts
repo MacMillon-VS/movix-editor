@@ -1,4 +1,9 @@
-import {BiLogoFacebook, BiLogoInstagram, BiLogoLinkedin, BiLogoTwitter} from 'react-icons/bi' 
+import {
+  BiLogoFacebook,
+  BiLogoInstagram,
+  BiLogoLinkedin,
+  BiLogoTwitter,
+} from "react-icons/bi";
 
 //Replace Your Links
 export const SocialLinks = [
@@ -24,8 +29,7 @@ export const SocialLinks = [
   },
 ] as const;
 
-
-export const WebsiteTitle = 'Movix' as const
+export const WebsiteTitle = "Movix" as const;
 
 export const NavLinks = [
   {
@@ -44,5 +48,13 @@ export const NavLinks = [
     name: "New",
     link: "/new",
   },
-] as const
+] as const;
 
+export const Passwordconfig = {
+  minLength: 8,
+  maxLength: 20,
+  upperCase: true,
+  lowerCase: true,
+  numbers: true,
+  specialChar: true,
+};

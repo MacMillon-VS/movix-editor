@@ -21,7 +21,7 @@ export const GetMovie = async (id, authToken) => {
 
 export async function GETSUBTITLE(id, authToken, lang = "en") {
   const res = await axios.get(
-    `${baseUrl}/api/video/sub-titles?video_id=${id}`,
+    `${baseUrl}/api/video/sub-titles?video_id=${id}&language_key=${lang}`,
     {
       headers: {
         Authorization: authToken,
@@ -40,6 +40,10 @@ export async function UpdateSubtitle(payload, authToken) {
         Authorization: authToken,
       },
     });
+
+    if (res.status === 401) {
+      return { error: "unauthorised", status: res.status };
+    }
 
     if (res.status !== 200) {
       return { error: "Something Went Wrong", status: res.status };
