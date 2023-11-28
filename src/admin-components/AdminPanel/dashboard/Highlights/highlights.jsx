@@ -1,36 +1,30 @@
-import MovieTanTable from "../Videos/MovieTanTable";
 import { useAxios, useMutation } from "../../useAxios";
 import { useMemo, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 import { DateTime } from "luxon";
 import HighlightsTable from "./HighlightsTable";
 import Loader from "../../../../utils/Loader";
+import axios from "axios";
 
 function Ebtn({ row }) {
-  const [isHidden, setIsHidden] = useState(row?.original.is_deleted);
-  const { updateMutation } = useMutation();
-  console.log({ Outside: isHidden });
-  const handleToggle = async () => {
-    try {
-      setIsHidden((prev) => !prev);
+  console.log(row);
+  const { deleteMutation, loading } = useMutation();
 
-      const data = await updateMutation(
-        `${import.meta.env.VITE_BACKEND_URL}/api/video/video/${
-          row?.original.video_number
-        }`,
-        { is_deleted: !isHidden }
-      );
-    } catch (error) {
-      console.error("Error toggling video status:", error);
-    }
-  };
+  async function DeleteHighlight(id) {
+    // ${import.meta.env.VITE_BACKEND_URL}/api/video/video-highlights/${id}
+    await deleteMutation(
+      `${import.meta.env.VITE_BACKEND_URL}/api/video/video-highlights/${id}`
+    );
+    window.location.reload();
+  }
 
   return (
     <>
       <div className="flex flex-row">
         <button className="focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 mt-4 sm:mt-0 inline-flex items-start justify-start px-3 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded">
           <Link
-            to={`/admin/edit?movieid=${encodeURI(row?.original.video_number)}`}
+            tabIndex={-1}
+            to={`/admin/edit?movieid=${encodeURI(row?.original.video_id)}`}
             className="text-sm font-medium leading-none text-white"
           >
             Edit Subtitle
@@ -38,6 +32,7 @@ function Ebtn({ row }) {
         </button>
         <button className="mx-4 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 mt-4 sm:mt-0 inline-flex items-start justify-start px-3 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded">
           <Link
+            tabIndex={-1}
             to={row.original.video_url}
             target="_blank"
             className="text-sm font-medium leading-none text-white"
@@ -45,16 +40,14 @@ function Ebtn({ row }) {
             Preview
           </Link>
         </button>
+
         <button
-          onClick={handleToggle}
-          className={`text-sm font-medium leading-none text-white mx-4 focus:ring-2 focus:ring-offset-2  mt-4 sm:mt-0 inline-flex items-start justify-start px-3 py-3 ${
-            isHidden
-              ? "bg-green-700 focus:ring-green-600 hover:bg-green-600"
-              : "bg-red-700 focus:ring-red-600 hover:bg-red-600"
-          } focus:outline-none rounded`}
+          onClick={() => DeleteHighlight(row.original.id)}
+          className="mx-4 focus:ring-2 focus:ring-offset-2 focus:ring-red-600 mt-4 sm:mt-0 inline-flex items-start justify-start px-3 py-3 bg-red-700 hover:bg-red-600 focus:outline-none rounded"
         >
-          {isHidden ? "Publish" : "Hide"}
+          {loading ? "Deleting..." : "Delete"}
         </button>
+
         {/* <ToggleVideoStatus videoId={row?.original.video_number} isPublished={true} /> */}
       </div>
     </>
@@ -66,6 +59,7 @@ const Highlights = () => {
   const { data, loading } = useAxios(
     `https://video-library.blacktievents.in/api/video/video-highlights`
   );
+  console.log(data);
   if (loading) {
     return <Loader />;
   }
@@ -101,7 +95,7 @@ const Highlights = () => {
     },
   ];
 
-  return <HighlightsTable data={data?.results} columns={columns} />;
+  return <HighlightsTable data={data?.data} columns={columns} />;
 };
 
 export default Highlights;

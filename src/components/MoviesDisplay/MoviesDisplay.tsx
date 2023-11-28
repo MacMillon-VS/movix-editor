@@ -7,15 +7,20 @@ import { Link } from "react-router-dom";
 
 import "swiper/css/navigation";
 import PopularMoviesCard from "./PopularMoviesCard";
+import { HighLightsResponseType } from "../../types/videos";
 
-type Props = {
-  title: string;
-};
+const MoviesDisplay = ({
+  InitialHighlights,
 
-const MoviesDisplay = ({ title }: Props) => {
-  // if(!collections) {
-  //   return <>Issue in getting data</>
-  // }
+  title,
+}: {
+  InitialHighlights?: HighLightsResponseType["data"];
+  isLoading: boolean;
+  title?: string;
+}) => {
+  if (!InitialHighlights) {
+    return <>Issue in getting data</>;
+  }
 
   return (
     <>
@@ -43,14 +48,13 @@ const MoviesDisplay = ({ title }: Props) => {
           spaceBetween={30}
           className=" cursor-grab overflow-y-visible"
         >
-          {Array.from({ length: 20 }, (_, index) => index + 1).map(
-            (collection, i) => {
-              return (
-                <SwiperSlide
-                  key={collection}
-                  className="shadow-lg select-none hover:scale-[1.15] transition-all duration-200 w-[200px]  xl:w-[230px] overflow-y-visible"
-                >
-                  {/* initial={i < 10 ? { scale: 0, opacity: 0 } : {}}
+          {InitialHighlights.map((collection, i) => {
+            return (
+              <SwiperSlide
+                key={collection.id}
+                className="shadow-lg select-none hover:scale-[1.15] transition-all duration-200 w-[200px]  xl:w-[230px] overflow-y-visible"
+              >
+                {/* initial={i < 10 ? { scale: 0, opacity: 0 } : {}}
                     whileInView={i < 10 ? { scale: 1, opacity: 1 } : {}}
                     transition={{
                       delay: i * 0.07,
@@ -60,16 +64,12 @@ const MoviesDisplay = ({ title }: Props) => {
                     }}
                     // whileHover={{scale:1.2}}
                     viewport={{ once: true }} */}
-                  <div className=" cursor-pointer  rounded-md overflow-hidden">
-                    <PopularMoviesCard
-                      id={i}
-                      image="https://www.themoviedb.org/t/p/original/w50Ofls7O0OoSaEcmzF1sNIZJYF.jpg"
-                    />
-                  </div>
-                </SwiperSlide>
-              );
-            }
-          )}
+                <div className=" cursor-pointer  rounded-md overflow-hidden">
+                  <PopularMoviesCard Movie={collection} id={i} />
+                </div>
+              </SwiperSlide>
+            );
+          })}
         </Swiper>
       </div>
     </>

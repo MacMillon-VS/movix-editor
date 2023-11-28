@@ -1,3 +1,5 @@
+import { DateTime } from "luxon";
+
 export const formatTime = (seconds: number) => {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
@@ -11,6 +13,15 @@ export const formatTime = (seconds: number) => {
 
   return `${formattedHours}${formattedMinutes}${formattedSeconds}`;
 };
+
+export function formatTimeDifference(inputTimeString: string) {
+  console.log(inputTimeString);
+  const inputDateTime = DateTime.fromISO(inputTimeString).toObject();
+  console.log(inputDateTime);
+  const formattedTime = DateTime.now().minus(inputDateTime).toRelative();
+
+  return formattedTime;
+}
 
 export function convertToSeconds(formattedTime: string) {
   const [hours, minutes, secondsWithMilliseconds] = formattedTime.split(":");

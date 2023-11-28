@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
-import PopularMoviesCard from "./PopularMoviesCard";
+
 import { AiOutlineRight } from "react-icons/ai";
 import { VideosType } from "../../types/videos";
 import VideoCardSkeleton from "../Skeleton/VideoCardSkeleton";
+import MoviesCard from "./MovieCard";
 
 const MoviesGrid = ({
   InitialMovies,
@@ -31,6 +32,7 @@ const MoviesGrid = ({
       </div>
     );
   }
+
   return (
     <div className=" py-5">
       <div className=" flex justify-between items-center">
@@ -50,11 +52,7 @@ const MoviesGrid = ({
               className="shadow-lg select-none lg:hover:scale-[1.15] transition-all duration-200 w-full overflow-y-visible"
             >
               <div className=" cursor-pointer  rounded-md overflow-hidden">
-                <PopularMoviesCard
-                  id={i}
-                  image="https://www.themoviedb.org/t/p/original/w50Ofls7O0OoSaEcmzF1sNIZJYF.jpg"
-                  Movie={collection}
-                />
+                <MoviesCard id={i} Movie={collection} />
               </div>
             </div>
           );

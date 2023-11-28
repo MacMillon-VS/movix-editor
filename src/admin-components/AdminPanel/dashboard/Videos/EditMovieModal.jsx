@@ -8,12 +8,13 @@ import { FormatDate } from "../../../../utils";
 
 const EditMovieModal = ({ setShowModal, Movie }) => {
   const { updateMutation, loading, error } = useMutation();
-  const [tags, setTags] = useState([]);
+  const [tags, setTags] = useState(Movie?.video_tags || []);
+  const [ValidationError, setValidationError] = useState();
 
   const [formData, setFormData] = useState({
     title: Movie?.video_name,
     minister: Movie?.video_members,
-    video_link: Movie?.video_link,
+    video_link: Movie?.video_url,
     event: Movie?.video_event,
     description: Movie.video_description,
     image: Movie.thumbnail,
@@ -21,6 +22,7 @@ const EditMovieModal = ({ setShowModal, Movie }) => {
   // TODO: Add Images
 
   const handleChange = (tags) => {
+    setValidationError("");
     setTags(tags);
   };
   const handleFormChanges = (e) => {
@@ -34,6 +36,9 @@ const EditMovieModal = ({ setShowModal, Movie }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { video_link, description, event, minister, title } = formData;
+    if (tags.length < 1) {
+      return setValidationError("Tags are Required");
+    }
     const payload = {
       video_url: video_link,
       video_description: description,
@@ -69,6 +74,7 @@ const EditMovieModal = ({ setShowModal, Movie }) => {
               placeholder="Enter movie title"
               label="Title"
               id={"title"}
+              required={true}
               value={formData.title}
               onChange={handleFormChanges}
               //   subtitle={""}
@@ -76,6 +82,7 @@ const EditMovieModal = ({ setShowModal, Movie }) => {
 
             <Input
               type="text"
+              required={true}
               className={"bg-[#2e374a]"}
               placeholder="Enter movie Minister"
               label="Minister"
@@ -86,6 +93,7 @@ const EditMovieModal = ({ setShowModal, Movie }) => {
           </div>
           <Input
             type="text"
+            required={true}
             className={"bg-[#2e374a]"}
             placeholder="Enter Video Link"
             label="Video Link"
@@ -98,6 +106,7 @@ const EditMovieModal = ({ setShowModal, Movie }) => {
             className={"bg-[#2e374a]"}
             placeholder="Enter Event"
             label="Event"
+            required={true}
             id={"event"}
             value={formData.event}
             onChange={handleFormChanges}
@@ -122,6 +131,7 @@ const EditMovieModal = ({ setShowModal, Movie }) => {
               onChange={handleChange}
               addKeys={[32]}
             />
+            <p className=" text-red-500">{ValidationError}</p>
           </div>
           <div className="flex flex-col gap-1">
             <p className="text-sm font-medium mb-2 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-start ">
@@ -131,6 +141,7 @@ const EditMovieModal = ({ setShowModal, Movie }) => {
               value={formData.description}
               onChange={handleFormChanges}
               //   maxLength={225}
+              required={true}
               maxRows={6}
               name="description"
               minRows={3}

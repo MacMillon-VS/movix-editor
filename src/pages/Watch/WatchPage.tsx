@@ -13,6 +13,7 @@ import SubtitleSearch from "./SubtitleSearch";
 
 const WatchPage = () => {
   const { id } = useParams();
+  const [DescriptionExpanded, setDescriptionExpanded] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -131,9 +132,21 @@ const WatchPage = () => {
               </div>
             </div>
           </div>
-          <p className=" my-1 text-accent">Uploaded 3 hours ago</p>
+          {/* <p className=" my-1 text-accent">
+            Uploaded{" "}
+            {formatTimeDifference(
+              Video?.created_at || DateTime.now().toString()
+            )}
+          </p> */}
           {/* <p className=" mt-3 ">{Video.video_event}</p> */}
-          <p className=" max-w-[50%] line-clamp-2">
+          <p
+            className={`max-w-[50%] cursor-pointer transition-all ${
+              !DescriptionExpanded ? "line-clamp-2" : ""
+            }`}
+            onClick={() => {
+              setDescriptionExpanded((prev) => !prev);
+            }}
+          >
             {Video?.video_description || ""}
           </p>
         </div>

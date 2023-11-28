@@ -1,13 +1,21 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { AiFillCode } from "react-icons/ai";
 import { BiCommand } from "react-icons/bi";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { AUTH_KEY } from "../../config";
 import { VideoResponseType } from "../../types/videos";
-import useDebounce from "../../hooks/useDebounce";
+
 import useKeyboardShortcuts from "../../hooks/useShortcut";
 import { useNavigate } from "react-router-dom";
+import TagsInput from "../Tags";
+import { useDebounce } from "react-use";
 
 type TData = {
   name: string;
@@ -24,17 +32,23 @@ type TItem = {
 const Categories = [
   {
     id: 0,
-    name: "tag:",
+    name: "tags:",
   },
 ];
 
-const Input = () => {
-  const [isopen, setOpen] = useState(false);
+const Input = ({
+  isopen,
+  setOpen,
+}: {
+  isopen: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+}) => {
   const [value, setvalue] = useState("");
-  const [debouncevalue] = useDebounce(value, 200);
+  // const [debouncevalue] = useDebounce(value, 200);
   const onFocus = () => setOpen(true);
   const onBlur = () => setOpen(false);
   const inputref = useRef<HTMLInputElement>(null);
+  const [tags, setTags] = useState<any[]>([]);
 
   useKeyboardShortcuts({
     Search: {
@@ -54,11 +68,16 @@ const Input = () => {
   } = useQuery({
     queryKey: ["search_movies"],
     queryFn: async () => {
-      if (!debouncevalue) return;
+      if (!value) return;
+      const filteredValues = tags.filter((value) => value.includes("tags:"));
+      const tagValues = filteredValues.map((value) => value.split(":")[1]);
+      const tag = tagValues.join(",") || " ";
+      console.log(tag);
+
       const { data } = await axios.get(
-        `${
-          import.meta.env.VITE_BACKEND_URL
-        }/api/video/video?search=${debouncevalue}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/video/video?search=${
+          value || " "
+        }&tag=${tag || ""}`,
         {
           headers: {
             Authorization: AUTH_KEY,
@@ -75,11 +94,19 @@ const Input = () => {
     enabled: false,
   });
 
+  useDebounce(
+    () => {
+      if (value !== "") {
+        refetch();
+      }
+    },
+    400,
+    [value]
+  );
+
   useEffect(() => {
-    if (debouncevalue !== "") {
-      refetch();
-    }
-  }, [debouncevalue]);
+    console.log(tags);
+  }, [tags]);
 
   const Data: TData[] = [
     {
@@ -109,14 +136,28 @@ const Input = () => {
         isopen ? "border-b-0 rounded-b-none" : ""
       }`}
     >
-      <input
+      {/* <input
         className={`outline-none bg-transparent transition-all w-[150px] md:w-[200px] duration-200  `}
         placeholder="Search Movies..."
-        style={isopen ? { width: "350px" } : {}}
         value={value}
         onChange={(e) => setvalue(e.target.value as string)}
-        ref={inputref}
+        // style={isopen ? { width: "350px" } : {}}
+      /> */}
+
+      <TagsInput
+        className={`outline-none bg-transparent transition-all max-w-full   duration-200 ${
+          isopen
+            ? "max-md:w-[250px] w-[300px] max-w-full transition-all "
+            : "w-[150px] md:w-[200px]"
+        }`}
+        // style={isopen ? { width: "350px" } : {}}
+        inputRef={inputref}
+        inputValue={value}
+        setInputValue={setvalue}
+        setTags={setTags}
+        tags={tags}
       />
+
       <Kbd />
       <SuggestionBox
         isopen={isopen}
@@ -167,6 +208,7 @@ const SuggestionBox = ({
       }, 0);
     } else if (item.function === "redirect") {
       navigate(`/watch/${name.id}`);
+      setvalue("");
 
       setopen(false);
     }
@@ -175,18 +217,22 @@ const SuggestionBox = ({
   return (
     <>
       {isopen && (
-        <div className="absolute bg-black shadow-2xl shadow-slate-800 max-h-[400px] overflow-y-scroll  bottom-0 translate-y-[101%] transition-all w-full  rounded-lg mt-2 p-2">
-          {Data.map((item) => (
-            <div className=" my-2">
+        <div className="absolute bg-black hide-scrollbar shadow-2xl shadow-slate-800 max-h-[400px] overflow-y-scroll  bottom-0 translate-y-[101%] transition-all w-full  rounded-lg mt-2 p-2">
+          {Data.map((item, index) => (
+            <div key={index} className=" my-2">
               <p className=" text-gray-400 mb-1">{item.name}</p>
               {item.items?.length! <= 0 ? (
                 <p className=" text-center">No Movies Found...</p>
               ) : null}
 
-              {loading ? <p className=" text-center">Loading....</p> : ""}
-
-              {item?.items?.map((data) => (
+              {item.name === "Movies" && loading ? (
+                <p className=" text-center">Loading....</p>
+              ) : (
+                ""
+              )}
+              {item?.items?.map((data, index) => (
                 <div
+                  key={index}
                   onMouseDown={() => handleclick(data, item)}
                   className=" flex items-center w-full gap-2 py-3 px-2 rounded-lg hover:bg-gray-700 cursor-pointer"
                 >

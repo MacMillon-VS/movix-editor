@@ -279,13 +279,13 @@ export default function Editor() {
     const formattedsubtitle = subtitle.map((item, index) => ({
       srt_sequence_number: index,
       start_time: item.start,
+      language_code: lang,
       end_time: item.end,
       sub_title: `${item.text} ${item.text2 ? `\n ${item.text2}` : ""}`,
     }));
 
     const payload = {
       video_id: CurrentMovie.video_number,
-      language_code: lang,
       srt_data: formattedsubtitle,
     };
 
@@ -295,7 +295,7 @@ export default function Editor() {
       if (response.error === "unauthorised") {
         SignOut();
       }
-      alert("Subtitles are not updated");
+      alert(response.error);
     } else {
       console.log("Subtitles are updated");
     }

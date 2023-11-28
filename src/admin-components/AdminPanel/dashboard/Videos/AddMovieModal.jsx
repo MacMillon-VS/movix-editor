@@ -8,6 +8,8 @@ import { FormatDate } from "../../../../utils";
 
 const AddMovieModal = ({ setShowModal }) => {
   const { executeMutation, loading, error } = useMutation();
+  const [ValidationError, setValidationError] = useState();
+
   const [tags, setTags] = useState([]);
   const [formData, setFormData] = useState({
     title: "",
@@ -15,9 +17,11 @@ const AddMovieModal = ({ setShowModal }) => {
     video_link: "",
     event: "",
     description: "",
+    image: "",
   });
 
   const handleChange = (tags) => {
+    setValidationError("");
     setTags(tags);
   };
   const handleFormChanges = (e) => {
@@ -30,12 +34,15 @@ const AddMovieModal = ({ setShowModal }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (tags.length < 1) {
+      return setValidationError("Tags are Required");
+    }
     const todaysDate = new Date();
     const video_year = todaysDate.getFullYear();
     const video_date = FormatDate(todaysDate);
     const video_session = 1;
     const video_sequence_number = 234234;
-    const { video_link, description, event, minister, title } = formData;
+    const { video_link, description, event, minister, title, image } = formData;
     const payload = [
       {
         video_url: video_link,
@@ -48,8 +55,10 @@ const AddMovieModal = ({ setShowModal }) => {
         video_date,
         video_session,
         video_sequence_number,
+        // thumbnail: image,
       },
     ];
+    // console.log(payload);
 
     const data = await executeMutation(
       `${import.meta.env.VITE_BACKEND_URL}/api/video/video`,
@@ -73,6 +82,7 @@ const AddMovieModal = ({ setShowModal }) => {
               required={true}
               value={formData.title}
               onChange={handleFormChanges}
+
               //   subtitle={""}
             />
 
@@ -126,6 +136,7 @@ const AddMovieModal = ({ setShowModal }) => {
               onChange={handleChange}
               addKeys={[32]}
             />
+            <p className=" text-red-500">{ValidationError}</p>
           </div>
           <div className="flex flex-col gap-1">
             <p className="text-sm font-medium mb-2 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-start ">

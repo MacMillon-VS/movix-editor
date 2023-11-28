@@ -26,6 +26,8 @@ export default function Header({
   language,
   subtitle,
   setLoading,
+  CurrentMovie,
+
   formatSub,
   setSubtitle,
   setProcessing,
@@ -344,12 +346,16 @@ export default function Header({
           <option value="Hindi  ">Hindi</option>
           <option value="Mallyalam ">Malyalam</option>
         </select> */}
-        <Link to={"/"} className="btn">
+        <Link
+          target="_blank"
+          to={`/watch/${CurrentMovie.video_number}`}
+          className="btn"
+        >
+          <Translate value="Preview Movie" />
+        </Link>
+        <Link to={"/admin"} className="btn">
           <Translate value="Go Back" />
         </Link>
-        <div className="btn">
-          <Translate value="Submit" />
-        </div>
       </div>
     </ToolsStyle>
   );

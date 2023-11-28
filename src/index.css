@@ -235,3 +235,49 @@ input[type="range"] {
   cursor: text;
   border-radius: 6px;
 }
+
+/* Home Page Search bar */
+
+.searchBar .tag {
+  @apply bg-primary;
+
+  color: black;
+
+  border-radius: 4px;
+  cursor: pointer;
+  height: 100%;
+  display: block;
+  padding-inline: 6px;
+}
+
+.searchBar .tag:hover {
+  background: #222;
+}
+
+.searchBar input {
+  outline: none;
+  background-color: transparent;
+  appearance: none;
+  flex: 1;
+}
+
+.searchBar input:focus,
+.searchBar input:focus-within,
+.searchBar input:focus-visible {
+  outline: none;
+  border: none;
+  appearance: none;
+}
+
+/* Hidden ScrollBar */
+@layer utilities {
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .hide-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}

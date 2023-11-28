@@ -104,13 +104,14 @@ export function useMutation() {
       return response.data;
     } catch (err) {
       setError(err);
+      setLoading(false);
+
       if (error.name === "AxiosError") {
         if (error.response.status === 401) {
           console.log("ERROR:", error.response.status);
           Signout();
         }
       }
-      setLoading(false);
       throw err; // Rethrow the error for the caller to handle if needed
     }
   };
@@ -136,5 +137,26 @@ export function useMutation() {
     }
   };
 
-  return { executeMutation, updateMutation, loading, error };
+  const deleteMutation = async (url, config = {}) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await axios.delete(url, {
+        headers: {
+          Authorization: token(),
+          "Content-Type": "application/json",
+        },
+      });
+      setLoading(false);
+      return response.data;
+    } catch (err) {
+      const Error = HandleError(err);
+      setError(Error);
+      setLoading(false);
+      throw Error;
+    }
+  };
+
+  return { deleteMutation, executeMutation, updateMutation, loading, error };
 }

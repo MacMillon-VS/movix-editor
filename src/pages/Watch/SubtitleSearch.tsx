@@ -27,7 +27,9 @@ const SubtitleSearch = ({
     queryFn: async () => {
       if (!debouncedValue) return [];
       const { data }: { data: SubtitleSearchResponseType } = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/video/sub-titles?search=${debouncedValue}`,
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/video/sub-titles?search=${debouncedValue}`,
         {
           headers: {
             Authorization: AUTH_KEY,
@@ -97,6 +99,7 @@ const SubtitleSearch = ({
                 </button>
               </li>
             ))}
+
             <span className="flex items-center leading-[1] gap-1 mt-2 text-gray-400">
               <IoIosHelpCircleOutline className=" my-auto  " size={18} />{" "}
               <span>Click time to Seek</span>

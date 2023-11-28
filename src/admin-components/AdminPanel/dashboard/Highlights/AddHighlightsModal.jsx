@@ -9,6 +9,7 @@ import { useAuthUser } from "react-auth-kit";
 
 const AddHighlightsModal = ({ setShowModal }) => {
   const { executeMutation, loading, error } = useMutation();
+  const [ValidationError, setValidationError] = useState();
   const userFn = useAuthUser();
   const user = userFn();
 
@@ -29,26 +30,31 @@ const AddHighlightsModal = ({ setShowModal }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const {
+    let {
       highlight_description,
       highlight_priority,
       highlight_title,
       video_id,
     } = formData;
 
+    try {
+      video_id = parseInt(video_id);
+      highlight_priority = parseInt(highlight_priority);
+    } catch (error) {
+      return setValidationError("Something Went Wrong");
+    }
+
     if (!user.id) {
       return;
     }
 
-    const payload = [
-      {
-        highlight_description,
-        highlight_priority,
-        highlight_title,
-        video_id,
-        uploded_user_id: user.id,
-      },
-    ];
+    const payload = {
+      highlight_description,
+      highlight_priority,
+      highlight_title,
+      video_id,
+      uploded_user_id: user.id,
+    };
 
     const data = await executeMutation(
       `${import.meta.env.VITE_BACKEND_URL}/api/video/video-highlights`,
@@ -114,6 +120,16 @@ const AddHighlightsModal = ({ setShowModal }) => {
               placeholder="Enter The Description"
               className="flex h-9 w-full rounded-md  bg-[#2e374a] px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
             />
+            {error ? (
+              <p className=" text-red-500">Something Went Wrong Try again</p>
+            ) : (
+              ""
+            )}
+            {ValidationError ? (
+              <p className=" text-red-500">Something Went Wrong Try again</p>
+            ) : (
+              ""
+            )}
           </div>
 
           <div className=" flex w-full justify-end gap-2">
@@ -126,9 +142,10 @@ const AddHighlightsModal = ({ setShowModal }) => {
             </button>
             <button
               type="submit"
+              disabled={loading}
               className=" bg-[#4f46e5] px-4 py-2 rounded-md shadow text-white font-semibold hover:bg-[#4f46e5]/90"
             >
-              Add Highlight
+              {loading ? "Generating..." : "Add Highlight"}
             </button>
           </div>
         </form>

@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 const baseUrl = `${import.meta.env.VITE_BACKEND_URL}`;
 export const GetMovie = async (id, authToken) => {
   try {
@@ -41,16 +41,24 @@ export async function UpdateSubtitle(payload, authToken) {
       },
     });
 
-    if (res.status === 401) {
-      return { error: "unauthorised", status: res.status };
+    if (!res.data) {
+      return { error: "Something Went Wrong" };
     }
-
-    if (res.status !== 200) {
-      return { error: "Something Went Wrong", status: res.status };
-    } else {
-      return res.data;
-    }
+    return res.data;
   } catch (error) {
-    return { error: "Something Went Wrong" };
+    if (axios.isAxiosError(error)) {
+      console.log(error);
+      if (error.response.status === 403) {
+        return { error: "unauthorised", status: error.response.status };
+      }
+
+      if (error.response.status !== 200) {
+        return { error: "Something Went Wrong", status: error.response.status };
+      } else {
+        return { error: "Something Went Wrong" };
+      }
+    } else {
+      return { error: "Something Went Wrong" };
+    }
   }
 }

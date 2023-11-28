@@ -58,3 +58,11 @@ export const Passwordconfig = {
   numbers: true,
   specialChar: true,
 };
+
+export const PageConfig = {
+  Video_page_size: 10,
+};
+
+export const thumbnail = `${
+  import.meta.env.VITE_BACKEND_URL
+}/api/user_data/thumbnails/thumbnail.png`;

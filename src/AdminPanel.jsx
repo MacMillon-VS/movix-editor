@@ -1,12 +1,30 @@
 // import { Movies } from "../data";
-import MovieTanTable from "./admin-components/AdminPanel/dashboard/Videos/MovieTanTable.jsx";
 
+import { useEffectOnce } from "react-use";
 import Sidebar from "./admin-components/AdminPanel/sidebar/Sidebar.jsx";
-import axios from "axios";
-import Videos from "./admin-components/AdminPanel/dashboard/Videos/Videos.jsx";
-import { Outlet } from "react-router-dom";
 
+import { Outlet } from "react-router-dom";
+import axios from "axios";
+import { useAxios } from "./admin-components/AdminPanel/useAxios.jsx";
+import { useEffect } from "react";
+import { getCookie } from "./config.ts";
+import { useAuthHeader, useSignOut } from "react-auth-kit";
 export default function AdminPanel() {
+  const signout = useSignOut();
+  const tokenfn = useAuthHeader();
+  const token = tokenfn();
+  useEffectOnce(() => {
+    AccessCheck(token)
+      .then((val) => {
+        if (!val) {
+          signout();
+        }
+      })
+      .catch((error) => {
+        signout();
+      });
+  }, []);
+
   return (
     <>
       <div className="flex  h-screen w-full overflow-hidden bg-gray-200">
@@ -27,4 +45,23 @@ export default function AdminPanel() {
       </div>
     </>
   );
+}
+
+async function AccessCheck(authToken) {
+  try {
+    const data = await axios.get(
+      `${import.meta.env.VITE_BACKEND_URL}/api/user/access-check`,
+      {
+        headers: {
+          Authorization: authToken,
+        },
+      }
+    );
+
+    if (data.status === "403") {
+      return false;
+    } else return true;
+  } catch (error) {
+    return false;
+  }
 }
