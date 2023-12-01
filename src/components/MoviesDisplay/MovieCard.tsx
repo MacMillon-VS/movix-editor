@@ -29,7 +29,7 @@ const MoviesCard = ({ Movie }: Props) => {
         loading="lazy"
         className=" object-cover  w-[260px] h-[400px] bg-white   transition-all duration-500 "
         src={
-          `${import.meta.env.VITE_BACKEND_URL}${Movie.thumbnail}` || thumbnail
+          `${import.meta.env.VITE_BACKEND_URL}${Movie.thumbnail}` ?? thumbnail
         }
         onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
           const target = e.target as HTMLImageElement;

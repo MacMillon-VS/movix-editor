@@ -281,3 +281,38 @@ input[type="range"] {
     scrollbar-width: none; /* Firefox */
   }
 }
+
+
+/* timeline card */
+.TimelinePointWrapper-sc-12rz3g8-0::after, .TimelinePointWrapper-sc-12rz3g8-0::before{
+  background-color: #64a451 !important;
+}
+
+.Shape-sc-18iuiou-3{
+  background-color: white !important;
+  border: none !important;
+}
+.Shape-sc-18iuiou-3.active{
+  background-color: #64a451 !important;
+  border: none !important;
+}
+.bOPcbp{
+  width: 20px !important;
+  height: 20px !important;
+}
+.TimelineContentDetails-sc-d7qjm1-5{
+  @apply !line-clamp-1
+}
+.Wrapper-sc-cif21b-0{
+  flex-direction: column-reverse !important;
+}
+.MediaWrapper-sc-1yk7mm5-0{
+  padding: 8px 0 0 !important;
+}
+.TimelineCardHeader-sc-d7qjm1-1{
+  padding: 0 !important;
+} 
+.CardSubTitle-sc-d7qjm1-2{
+  padding: 0 !important;
+  margin-left: 16px !important;
+}

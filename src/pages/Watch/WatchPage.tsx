@@ -3,14 +3,14 @@ import VideoPlayer from "../../components/Video/VideoPlayer";
 import { useQueries } from "@tanstack/react-query";
 import axios from "axios";
 import { AUTH_KEY } from "../../config";
-import { VideoResponseType, VideosType } from "../../types/videos";
+import { TimelineType, VideoResponseType, VideosType } from "../../types/videos";
 import MoviesGrid from "../../components/MoviesDisplay/MoviesGrid";
 import { useEffect, useState } from "react";
 import { jsonToWebVTT } from "../../utils/utils";
 import Filesaver from "file-saver";
 
+import VideoTimeline from '../../components/movie-timeline/VideoTimeline'
 import SubtitleSearch from "./SubtitleSearch";
-
 const WatchPage = () => {
   const { id } = useParams();
   const [DescriptionExpanded, setDescriptionExpanded] = useState(false);
@@ -23,6 +23,7 @@ const WatchPage = () => {
     { data: Video },
     { data: InitialMovies, isLoading: isInitialMovieLoading },
     { data: Subtitles },
+    {data:VTimeline},
   ] = useQueries({
     queries: [
       {
@@ -86,6 +87,20 @@ const WatchPage = () => {
           console.log(err);
         },
       },
+      {
+        queryKey: ["video-timeline"],
+        queryFn: async () => {
+          const { data } = await axios.get(
+            `${import.meta.env.VITE_BACKEND_URL}/api/video/video-timeline?video_id=${id}`
+          );
+
+          return data as TimelineType;
+        },
+        onError: (err: any) => {
+          // alert("Something Went Wrong");
+          console.log(err);
+        },
+      }
     ],
   });
 
@@ -172,7 +187,9 @@ const WatchPage = () => {
             </div>
           </div>
         </div>
-
+        <div className="flex justify-center">
+        <VideoTimeline VTimeline={VTimeline?.data}/>
+        </div>
         <div className="max-w-screen-2xl mx-auto py-3 px-5">
           <MoviesGrid
             title="You may also Like"

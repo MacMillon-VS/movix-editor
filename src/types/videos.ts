@@ -71,3 +71,23 @@ export type SubtitleSearchResponseType = {
     updated_at: string;
   }[];
 };
+
+export type TimelineType = {
+  code: number,
+	message: string,
+  data: {
+    video_number: number;
+    video_url: string | null;
+    video_name: string | null;
+    video_year: number | null;
+    video_session: string | null;
+    video_date: string | null;
+    video_event: string | null;
+    video_description: string | null;
+    video_members: string | null;
+    video_minister: string | null;
+    video_sequence_number: string | null;
+    video_tags: string[] | null;
+    thumbnail: string | null;
+  }[];
+};
