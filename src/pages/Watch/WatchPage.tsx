@@ -1,8 +1,7 @@
 import { useParams } from "react-router-dom";
 import VideoPlayer from "../../components/Video/VideoPlayer";
 import { useQueries } from "@tanstack/react-query";
-import axios from "axios";
-import { AUTH_KEY } from "../../config";
+import axios from "axios"; 
 import { TimelineType, VideoResponseType, VideosType } from "../../types/videos";
 import MoviesGrid from "../../components/MoviesDisplay/MoviesGrid";
 import { useEffect, useState } from "react";
@@ -31,11 +30,7 @@ const WatchPage = () => {
         queryFn: async () => {
           const { data } = await axios.get(
             `${import.meta.env.VITE_BACKEND_URL}/api/video/video/${id}`,
-            {
-              headers: {
-                Authorization: AUTH_KEY,
-              },
-            }
+            
           );
 
           return data as VideosType;
@@ -50,11 +45,7 @@ const WatchPage = () => {
         queryFn: async () => {
           const { data } = await axios.get(
             `${import.meta.env.VITE_BACKEND_URL}/api/video/video`,
-            {
-              headers: {
-                Authorization: AUTH_KEY,
-              },
-            }
+            
           );
 
           return data as VideoResponseType;
@@ -71,11 +62,7 @@ const WatchPage = () => {
             `${
               import.meta.env.VITE_BACKEND_URL
             }/api/video/sub-titles?video_id=${id}`,
-            {
-              headers: {
-                Authorization: AUTH_KEY,
-              },
-            }
+            
           );
 
           const subtitle = jsonToWebVTT(data.results);

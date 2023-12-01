@@ -1,4 +1,4 @@
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { useQueries } from "@tanstack/react-query";
 import HeroSection from "../../components/HeroSection/HeroSection";
 import MoviesDisplay from "../../components/MoviesDisplay/MoviesDisplay";
 import MoviesGrid from "../../components/MoviesDisplay/MoviesGrid";

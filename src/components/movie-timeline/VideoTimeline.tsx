@@ -1,6 +1,6 @@
 import { Chrono } from "react-chrono";
 import { TimelineType } from "../../types/videos";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { thumbnail } from "../../constants/Informations";
 
 const VideoTimeline = ({ VTimeline }: { VTimeline: TimelineType['data'] | undefined }) => {
